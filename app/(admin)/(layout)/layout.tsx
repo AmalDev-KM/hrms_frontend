@@ -16,22 +16,18 @@ export default function RootLayout({
 }>) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   return (
-    <html lang="en">
-      <body className="min-h-screen">
-        <div className="min-h-screen w-full bg-background flex">
-          <DashboardSidebar
-            isOpen={sidebarOpen}
-            onClose={() => setSidebarOpen(false)}
-            activeItem="Dashboard"
-          />
-          <div className="flex-1 flex flex-col min-w-0">
-            <DashboardHeader />
-            <main className="flex-1 p-4 md:p-6 lg:p-8 space-y-6 overflow-auto">
-              {children}
-            </main>
-          </div>
-        </div>
-      </body>
-    </html>
+    <div className="min-h-screen w-full bg-background flex">
+      <DashboardSidebar
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        activeItem="Dashboard"
+      />
+      <div className="flex-1 flex flex-col min-w-0">
+        <DashboardHeader />
+        <main className="flex-1 p-4 md:p-6 lg:p-8 space-y-6 overflow-auto">
+          {children}
+        </main>
+      </div>
+    </div>
   );
 }
