@@ -1,6 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -10,25 +11,46 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { ImageWithFallback } from "@/components/figma/ImageWithFallback";
 import { Lock, Mail, Building2 } from "lucide-react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ImageWithFallback } from "@/components/figma/ImageWithFallback";
+import { initialLoginValues, LoginFormData ,loginSchema } from "./Schema";
+import { api } from "@/lib/axios";
+import { AdminLoginResponse } from "@/types/admin/authTypes";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
+
 
 export function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle login logic here
-    console.log("Login attempted with:", { email, password, rememberMe });
-  };
+  const router = useRouter()
+  const hookForm = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: initialLoginValues,
+  })
+
+  const {register, handleSubmit, formState: {errors}} = hookForm;
+
+  const onsubmit = async (data: LoginFormData) => {
+    console.log("Login data submitted:", data);
+    try {
+      const res = await api.post<AdminLoginResponse>('/admin/login',data)
+      if(res.data.saveStatus){
+        toast.success(res.data.message)
+        router.push('/dashboard')
+      }
+      else{
+        toast.error(res.data.message)
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+    }
+  }
 
   return (
     <div className="min-h-screen w-full flex">
       {/* Left Side - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-primary via-primary/95 to-primary/90 p-12 flex-col justify-between overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 relative bg-linear-to-br from-primary via-primary/95 to-primary/90 p-12 flex-col justify-between overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <ImageWithFallback
             src="https://images.unsplash.com/photo-1718220216044-006f43e3a9b1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxvZmZpY2UlMjB3b3Jrc3BhY2UlMjBwcm9mZXNzaW9uYWx8ZW58MXx8fHwxNzYxNTc1OTk5fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
@@ -76,7 +98,7 @@ export function LoginPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="px-0 pt-6">
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit(onsubmit)} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="email">Email Address</Label>
                   <div className="relative">
@@ -87,13 +109,12 @@ export function LoginPage() {
                     <Input
                       id="email"
                       type="email"
+                      {...register("email")}
                       placeholder="admin@company.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
                       className="pl-10 h-11 bg-input-background"
-                      required
                     />
                   </div>
+                  {errors.email && (<div className="text-sm text-red-600 mt-1">{errors.email.message}</div>)}
                 </div>
 
                 <div className="space-y-2">
@@ -106,13 +127,12 @@ export function LoginPage() {
                     <Input
                       id="password"
                       type="password"
+                      {...register("password")}
                       placeholder="Enter your password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
                       className="pl-10 h-11 bg-input-background"
-                      required
                     />
                   </div>
+                  {errors.password && (<div className="text-sm text-red-600 mt-1">{errors.password.message}</div>)}
                 </div>
 
                 <div className="flex items-center justify-between">
@@ -120,10 +140,6 @@ export function LoginPage() {
                     <Checkbox
                     className="bg-input-background border border-gray-200 cursor-pointer"
                       id="remember"
-                      checked={rememberMe}
-                      onCheckedChange={(checked) =>
-                        setRememberMe(checked as boolean)
-                      }
                     />
                     <Label
                       htmlFor="remember"

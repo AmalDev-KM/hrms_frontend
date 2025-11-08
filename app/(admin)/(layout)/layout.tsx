@@ -3,6 +3,7 @@ import "@/app/globals.css";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { useState } from "react";
 import { DashboardSidebar } from "@/components/DashboardSidebar";
+import { ToastProvider } from "@/components/ToastProvider";
 
 // export const metadata: Metadata = {
 //   title: "Create Next App",
@@ -17,6 +18,7 @@ export default function RootLayout({
   const [sidebarOpen, setSidebarOpen] = useState(false);
   return (
     <div className="min-h-screen w-full bg-background flex">
+      <ToastProvider />
       <DashboardSidebar
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}

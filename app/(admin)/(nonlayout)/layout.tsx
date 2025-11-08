@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "@/app/globals.css";
+import { ToastProvider } from "@/components/ToastProvider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -14,6 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen">
+        <ToastProvider />
         {children}
       </body>
     </html>
