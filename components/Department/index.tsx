@@ -12,6 +12,7 @@ import { Plus } from "lucide-react";
 import { DepartmentList } from "./DepartmentList";
 import { CreateDepartmentDialog } from "@/components/Department/CreateDepartmentDialoug";
 import { DepartmentStats } from "@/components/Department/DepartmentStats";
+import { useGetDepartmentsQuery } from "@/store/services/departmentApi";
 
 export interface Department {
   id: string;
@@ -28,6 +29,8 @@ export interface Department {
 
 export function DepartmentsPage() {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
+ // const { data, isLoading, isError } = useGetDepartmentsQuery();
+  //console.log(data, "departments data from API");
   const [departments, setDepartments] = useState<Department[]>([
     {
       id: "1",

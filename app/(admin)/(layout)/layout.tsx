@@ -2,6 +2,7 @@ import "@/app/globals.css";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { DashboardSidebar } from "@/components/DashboardSidebar";
 import { ToastProvider } from "@/components/ToastProvider";
+import { StoreProvider } from "@/store/provider";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -15,17 +16,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="min-h-screen w-full bg-background flex">
-      <ToastProvider />
-      <DashboardSidebar
-      isOpen={true}
-      />
-      <div className="flex-1 flex flex-col min-w-0">
-        <DashboardHeader />
-        <main className="flex-1 p-4 md:p-6 lg:p-8 space-y-6 overflow-auto">
-          {children}
-        </main>
+    <StoreProvider>
+      <div className="min-h-screen w-full bg-background flex">
+        <ToastProvider />
+        <DashboardSidebar isOpen={true} />
+        <div className="flex-1 flex flex-col min-w-0">
+          <DashboardHeader />
+          <main className="flex-1 p-4 md:p-6 lg:p-8 space-y-6 overflow-auto">
+            {children}
+          </main>
+        </div>
       </div>
-    </div>
+    </StoreProvider>
   );
 }

@@ -12,44 +12,64 @@ export interface BackendResponse<T = unknown> {
 export const BACKEND_URL = process.env.EXPRESS_API_URL!;
 
 // General request function for all the requests
-async function request<T = unknown>(method: string, path: string, body?: any): Promise<BackendResponse<T>> {
+async function request<T = unknown>(
+  method: string,
+  path: string,
+  body?: any,
+  options: { headers?: Record<string, string> } = {}
+): Promise<BackendResponse<T>> {
   const base = BACKEND_URL.endsWith("/") ? BACKEND_URL : BACKEND_URL + "/";
   const cleanedPath = path.replace(/^\//, "");
   const url = base + cleanedPath;
 
-  console.log("constructed url(raw) =>", JSON.stringify(url));
+  console.log("created backend URL : => ",url)
 
   const res = await axios({
     url,
     method,
     data: body,
     withCredentials: true,
+    headers: {
+      "Content-Type": "application/json",
+      ...(options.headers || {}), // ✅ new
+    },
     validateStatus: () => true,
   });
 
   return {
     status: res.status,
     data: res.data as T,
-    setCookie: res.headers["set-cookie"]
+    setCookie: res.headers["set-cookie"],
   };
 }
 
 // general function for GET, POST, PUT, DELETE
-export function backendGet<T = unknown>(path: string) {
-  return request<T>("GET", path);
+export function backendGet<T = unknown>(
+  path: string,
+  options?: { headers?: Record<string, string> }
+) {
+  return request<T>("GET", path, undefined, options);
 }
 
 export function backendPost<Response = unknown, Body = unknown>(
   path: string,
-  body: Body
+  body: Body,
+  options?: { headers?: Record<string, string> }
 ) {
-  return request<Response>("POST", path, body);
+  return request<Response>("POST", path, body, options);
 }
 
-export function backendPut<Response = unknown, Body = unknown>(path: string, body: Body) {
-  return request<Response>("PUT", path, body);
+export function backendPut<Response = unknown, Body = unknown>(
+  path: string,
+  body: Body,
+  options?: { headers?: Record<string, string> }
+) {
+  return request<Response>("PUT", path, body, options);
 }
 
-export function backendDelete<T = unknown>(path: string) {
-  return request<T>("DELETE", path);
+export function backendDelete<T = unknown>(
+  path: string,
+  options?: { headers?: Record<string, string> }
+) {
+  return request<T>("DELETE", path, undefined, options);
 }
